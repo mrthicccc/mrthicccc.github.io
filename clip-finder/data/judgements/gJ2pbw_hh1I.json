@@ -1,0 +1,22 @@
+{
+  "genre_match": true,
+  "genre_evidence": "Frame 2 shows a small child riding a tiny dirt bike across a grass field; frames 1 and 4 show a young child in a red motocross helmet. Matches 'dirt bikes' but as family vlog content, not a crash-legible clip.",
+  "watermark_visible": false,
+  "watermark_detail": "none seen in these frames; vertical clip with mirrored-blur pillarbox, no platform logo or @handle visible",
+  "slot": "none",
+  "funny_score": 2.0,
+  "humour_type": [
+    "elder_or_child"
+  ],
+  "why_funny": "Cute toddler in oversized helmet and a tearful kid on a swing; the actual crash is not visible in any frame, so the punch beat is unverified.",
+  "sound_off_legible": false,
+  "crop_safe": true,
+  "escalation_severity": 2.0,
+  "risk_flags": [
+    "minor_present",
+    "possible_real_injury",
+    "demonetisation_risk"
+  ],
+  "verdict": "reject",
+  "reason": "Subjects are young children and frame 3 shows a crying child after an implied crash — minor present plus possible real injury, and the visible frames carry no legible physical punchline."
+}

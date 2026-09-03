@@ -1,0 +1,22 @@
+{
+  "genre_match": true,
+  "genre_evidence": "Frames 1, 3, 4 show a dirt bike on an extremely steep sand/clay cliff face with a rider climbing beside it — a hill climb attempt gone wrong. Frame 2 is a reaction/commentary face-cam with a 'CLIMB' caption overlay.",
+  "watermark_visible": true,
+  "watermark_detail": "Burned-in animated cursor graphic and 'CLIMB' caption in frame 2; large red 'Subscribe 🔔' button graphic burned into frame 4 — reaction-channel branding overlays, not clean source footage.",
+  "slot": "last_day",
+  "funny_score": 3.0,
+  "humour_type": [
+    "confident_setup_failure",
+    "equipment_malfunction"
+  ],
+  "why_funny": "Bike stranded near-vertical on a crumbling cliff with the rider scrambling up after it is a decent 'that was a bad idea' image, but it reads as stunt spectacle more than comedy.",
+  "sound_off_legible": true,
+  "crop_safe": true,
+  "escalation_severity": 6.0,
+  "risk_flags": [
+    "brand_or_pro_content",
+    "possible_real_injury"
+  ],
+  "verdict": "reject",
+  "reason": "Reaction-channel repost with burned-in Subscribe button, cursor and caption overlays plus a face-cam segment — not clean sourceable footage, and the cliff fall carries real injury risk."
+}

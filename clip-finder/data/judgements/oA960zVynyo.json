@@ -1,0 +1,23 @@
+{
+  "genre_match": true,
+  "genre_evidence": "All four frames show riders on dirt bikes — wheelie up a concrete drainage slope, a jump over scrub, and a bike cartwheeling nose-down in a dirt berm with the rider hitting the ground.",
+  "watermark_visible": false,
+  "watermark_detail": "No platform logo or @handle seen in these frames; blurred pillarbox bars and burned-in green/white auto-captions indicate it is already a repurposed vertical short, but no competitor mark is legible.",
+  "slot": "none",
+  "funny_score": 2.5,
+  "humour_type": [
+    "confident_setup_failure",
+    "physical_incompetence"
+  ],
+  "why_funny": "Only the final frame has a comedy beat — bike vertical, rider dumped in the dirt — but it reads as a heavy high-speed crash rather than a harmless fail, and the rest is just competent riding.",
+  "sound_off_legible": true,
+  "crop_safe": false,
+  "escalation_severity": 8.0,
+  "risk_flags": [
+    "possible_real_injury",
+    "brand_or_pro_content",
+    "demonetisation_risk"
+  ],
+  "verdict": "reject",
+  "reason": "Final frame is a full nose-over crash at speed with the rider hitting hard (possible real injury), and the clip is an already-edited captioned compilation with pillarbox bars, so it is neither crop-safe nor original footage."
+}

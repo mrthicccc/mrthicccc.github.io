@@ -1,0 +1,22 @@
+{
+  "genre_match": true,
+  "genre_evidence": "Woman straddling a blue dirt bike on a lawn while two others watch; final frame shows the bike down/out of shot and a bystander running toward the spot.",
+  "watermark_visible": false,
+  "watermark_detail": "none seen in these frames; video is a pillarboxed vertical repost but no platform logo or @handle visible",
+  "slot": "none",
+  "funny_score": 2.0,
+  "humour_type": [
+    "physical_incompetence",
+    "confident_setup_failure"
+  ],
+  "why_funny": "Novice on a dirt bike in a back garden with spectators is a classic confident-setup beat, but the payoff here is an apparent genuine crash, not a comedy fail.",
+  "sound_off_legible": true,
+  "crop_safe": true,
+  "escalation_severity": 7.0,
+  "risk_flags": [
+    "possible_real_injury",
+    "non_consenting_subject"
+  ],
+  "verdict": "reject",
+  "reason": "Title explicitly claims a broken leg and the final frame shows the rider down with someone rushing in, so this falls under the hard real-injury reject."
+}

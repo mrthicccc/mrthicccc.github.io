@@ -1,0 +1,22 @@
+{
+  "genre_match": true,
+  "genre_evidence": "Rider in MX gear on a blue Yamaha YZ450 dirt bike doing a rolling wheelie on a public road; first frame shows the bike and rider down on the tarmac mid-crash.",
+  "watermark_visible": false,
+  "watermark_detail": "none seen in these frames; vertical video with blurred pillarbox edges (typical of a short-form repost) but no platform logo or @handle legible",
+  "slot": "last_day",
+  "funny_score": 4.5,
+  "humour_type": [
+    "confident_setup_failure",
+    "equipment_malfunction"
+  ],
+  "why_funny": "Long confident wheelie down an open road ends with rider and brand-new bike sliding out on tarmac — clean 'watch this' to instant disaster beat, readable with no sound.",
+  "sound_off_legible": true,
+  "crop_safe": true,
+  "escalation_severity": 7.0,
+  "risk_flags": [
+    "possible_real_injury",
+    "demonetisation_risk"
+  ],
+  "verdict": "reject",
+  "reason": "High-speed loss of control onto asphalt with the bike coming down on the rider, and the uploader's own title flags injury — the possible-real-injury hard line applies regardless of how good the setup-to-failure beat is."
+}

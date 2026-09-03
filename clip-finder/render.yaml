@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: clip-finder
+    runtime: docker
+    plan: free
+    envVars:
+      # Ignore any key baked into the image; every visitor brings their own.
+      - key: REQUIRE_USER_KEY
+        value: "1"
+      # sync:false means Render prompts you for this in the dashboard and it
+      # never lives in the repo. Set it to the passphrase you share.
+      - key: APP_PASSPHRASE
+        sync: false
+      # Signs session cookies. Generated once by Render and kept across
+      # deploys, so a restart doesn't sign everyone out.
+      - key: SESSION_SECRET
+        generateValue: true

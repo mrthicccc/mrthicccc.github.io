@@ -1,0 +1,65 @@
+# Genre pack: bowling. Worked example — copy this shape for new venues.
+id: bowling
+title_format: "First and last day at the bowling alley"
+status: active
+
+# --- Discovery -------------------------------------------------------------
+seeds:
+  youtube:
+    - "bowling fail"
+    - "bowling gutter ball funny"
+    - "first time bowling reaction"
+    - "bowling alley fail compilation"
+    - "bowling ball slips out of hand"
+    - "kid bowling funny"
+  reddit:
+    subreddits: [funny, Wellthatsucks, instantkarmalol, holdmybeer, kidsarefuckingstupid, sportsarefun]
+    query: "bowling"
+
+# --- Genre lock ------------------------------------------------------------
+# Visual cues the VLM must confirm. Absence of ALL of these => genre_confidence 0.
+must_see_any:
+  - bowling lane with pins
+  - ball return machine
+  - overhead scoring screen
+  - bowling shoes / rented shoe aesthetic
+  - approach area with foul line
+
+# Hard excludes. These are the drift traps for this genre specifically.
+exclude:
+  - candlepin / duckpin league broadcast footage
+  - PBA or televised professional tournament
+  - lawn bowls, bocce, petanque, curling
+  - bowling in a video game or animation
+  - cricket bowling  # the big one — the word collides
+  - generic arcade footage with no lane visible
+
+# --- Clip constraints ------------------------------------------------------
+duration:
+  min_seconds: 2
+  max_seconds: 6
+crop_safe: true       # joke must survive a 9:16 centre crop
+sound_off_legible: true
+
+# --- Two-act slotting ------------------------------------------------------
+slots:
+  first_day:
+    target_count: 3
+    looking_for:
+      - hopeless but harmless technique (granny roll, both hands, eyes shut)
+      - gutter ball with a proud celebration anyway
+      - someone slipping gently on the approach, no fall
+      - bumpers-up adult energy
+  last_day:
+    target_count: 5
+    escalating: true    # order by severity, biggest last
+    looking_for:
+      - ball released backwards into the seating area
+      - person sliding down the lane after the ball
+      - ball return / pinsetter machine malfunction chaos
+      - taking out a bystander or a tray of drinks
+      - staff intervention, ejection, visible "you need to leave" moment
+
+pack:
+  total_clips: 8
+  max_per_source_channel: 2   # dedupe pressure; don't lean on one uploader

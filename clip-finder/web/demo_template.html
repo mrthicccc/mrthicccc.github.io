@@ -1,0 +1,468 @@
+<title>Sango Clip Finder</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chivo:wght@700;900&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --ground: #f4f6f8;
+    --panel: #ffffff;
+    --sunk: #eaedf1;
+    --ink: #12151a;
+    --muted: #5f6875;
+    --line: #dde1e7;
+    --accent: #5b21b6;
+    --accent-soft: #ede9fe;
+    --good: #15803d;
+    --warn: #b45309;
+    --bad: #b91c1c;
+    --shadow: 0 1px 2px rgba(18, 21, 26, .05), 0 10px 30px rgba(18, 21, 26, .05);
+    --display: "Chivo", ui-sans-serif, system-ui, sans-serif;
+    --body: "IBM Plex Sans", ui-sans-serif, -apple-system, "Segoe UI", sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #0e1013;
+      --panel: #171a1f;
+      --sunk: #1f232a;
+      --ink: #e6e9ed;
+      --muted: #8a94a3;
+      --line: #2a2f37;
+      --accent: #a78bfa;
+      --accent-soft: #241d3d;
+      --good: #4ade80;
+      --warn: #fbbf24;
+      --bad: #f87171;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .5), 0 10px 30px rgba(0, 0, 0, .35);
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #0e1013;
+    --panel: #171a1f;
+    --sunk: #1f232a;
+    --ink: #e6e9ed;
+    --muted: #8a94a3;
+    --line: #2a2f37;
+    --accent: #a78bfa;
+    --accent-soft: #241d3d;
+    --good: #4ade80;
+    --warn: #fbbf24;
+    --bad: #f87171;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .5), 0 10px 30px rgba(0, 0, 0, .35);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--ground); color: var(--ink);
+    font-family: var(--body); font-size: 15px; line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 44px 22px 90px; }
+  section { margin-bottom: 44px; }
+
+  /* --- masthead --- */
+  .mast { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+  h1 {
+    font-family: var(--display); font-weight: 900; font-size: clamp(30px, 5vw, 44px);
+    letter-spacing: -.03em; margin: 0; line-height: 1.05; text-wrap: balance;
+  }
+  .kicker {
+    font-family: var(--mono); font-size: 11px; letter-spacing: .16em;
+    text-transform: uppercase; color: var(--accent); font-weight: 500;
+  }
+  .lede { color: var(--muted); max-width: 62ch; margin: 0; font-size: 16px; }
+
+  .notice {
+    display: flex; gap: 12px; align-items: flex-start; margin-top: 22px;
+    padding: 14px 16px; border-radius: 10px; font-size: 14px;
+    background: var(--accent-soft); border: 1px solid var(--line);
+  }
+  .notice b { font-weight: 600; }
+  .notice p { margin: 0; color: var(--muted); }
+  .notice p b { color: var(--ink); }
+
+  h2 {
+    font-family: var(--display); font-weight: 700; font-size: 13px;
+    letter-spacing: .13em; text-transform: uppercase; color: var(--muted);
+    margin: 0 0 14px; display: flex; align-items: center; gap: 10px;
+  }
+  h2::after {
+    content: ""; flex: 1; height: 1px; background: var(--line);
+  }
+
+  /* --- live scorer --- */
+  .scorer { background: var(--panel); border: 1px solid var(--line);
+    border-radius: 14px; padding: 22px; box-shadow: var(--shadow); }
+  .field { display: flex; gap: 10px; }
+  input {
+    flex: 1; min-width: 0; padding: 13px 15px; font: 500 16px var(--body);
+    color: var(--ink); background: var(--sunk);
+    border: 1px solid var(--line); border-radius: 9px;
+  }
+  input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  button {
+    padding: 13px 20px; font: 600 15px var(--body); color: var(--ground);
+    background: var(--accent); border: 0; border-radius: 9px; cursor: pointer;
+  }
+  button:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+  .chip {
+    font: 500 12.5px var(--body); padding: 5px 11px; border-radius: 15px;
+    background: transparent; color: var(--muted);
+    border: 1px solid var(--line); cursor: pointer;
+  }
+  .chip:hover { color: var(--accent); border-color: var(--accent); }
+
+  .result { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--line); }
+  .vline { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .tier {
+    font-family: var(--display); font-weight: 900; font-size: 12px;
+    letter-spacing: .1em; padding: 5px 11px; border-radius: 6px;
+    color: #fff; background: var(--muted);
+  }
+  .tier.A, .tier.B { background: var(--good); }
+  .tier.C { background: var(--warn); }
+  .tier.D { background: var(--bad); }
+  .vname { font-family: var(--display); font-weight: 700; font-size: 19px; }
+  .vnum { font-family: var(--mono); font-size: 14px; color: var(--muted); }
+  .warns { margin: 14px 0 0; padding: 0; list-style: none;
+    display: flex; flex-direction: column; gap: 7px; }
+  .warns li {
+    font-size: 13.5px; color: var(--ink); padding-left: 15px; position: relative;
+  }
+  .warns li::before {
+    content: ""; position: absolute; left: 0; top: 8px; width: 5px; height: 5px;
+    border-radius: 50%; background: var(--warn);
+  }
+  .est { font-family: var(--mono); font-size: 11.5px; color: var(--muted);
+    margin-top: 12px; }
+  .bars { display: grid; gap: 5px; margin-top: 16px; }
+  .bar { display: grid; grid-template-columns: 92px 1fr 22px; gap: 10px;
+    align-items: center; font-family: var(--mono); font-size: 11px;
+    color: var(--muted); }
+  .track { height: 5px; background: var(--sunk); border-radius: 3px; overflow: hidden; }
+  .fill { height: 100%; background: var(--accent); border-radius: 3px; }
+  .fill.neg { background: var(--bad); }
+
+  /* --- evidence stats --- */
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 12px; }
+  .stat { background: var(--panel); border: 1px solid var(--line);
+    border-radius: 12px; padding: 18px; }
+  .stat .n { font-family: var(--display); font-weight: 900; font-size: 30px;
+    letter-spacing: -.03em; line-height: 1; font-variant-numeric: tabular-nums; }
+  .stat .n.down { color: var(--bad); }
+  .stat .n.up { color: var(--good); }
+  .stat .l { font-size: 13px; color: var(--muted); margin-top: 8px; }
+
+  /* --- scenario tabs --- */
+  .tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px; }
+  .tab {
+    font: 600 13.5px var(--body); padding: 8px 15px; border-radius: 8px;
+    border: 1px solid var(--line); background: var(--panel); color: var(--muted);
+    cursor: pointer; text-transform: capitalize;
+  }
+  .tab[aria-selected="true"] {
+    background: var(--accent); color: var(--ground); border-color: var(--accent);
+  }
+
+  /* --- clip cards --- */
+  .hero { background: var(--panel); border: 2px solid var(--accent);
+    border-radius: 14px; padding: 20px; box-shadow: var(--shadow); }
+  .card { background: var(--panel); border: 1px solid var(--line);
+    border-radius: 12px; padding: 16px; }
+  .list { display: flex; flex-direction: column; gap: 10px; }
+
+  .strip { display: flex; gap: 3px; margin-bottom: 14px; overflow-x: auto;
+    border-radius: 8px; }
+  .strip img { width: 25%; min-width: 96px; aspect-ratio: 4/3; object-fit: cover;
+    background: var(--sunk); display: block; }
+  .strip.mini { margin: 0; width: 200px; flex-shrink: 0; border-radius: 6px; }
+  .strip.mini img { min-width: 0; border-radius: 0; }
+
+  .ct { font-family: var(--display); font-weight: 700; font-size: 17px;
+    line-height: 1.3; text-wrap: balance; }
+  .card .ct { font-size: 15px; }
+  a.ct { color: inherit; text-decoration: none; }
+  a.ct:hover { color: var(--accent); text-decoration: underline; }
+  .meta { font-family: var(--mono); font-size: 12px; color: var(--muted);
+    margin-top: 6px; font-variant-numeric: tabular-nums; }
+  .row { display: flex; gap: 14px; align-items: flex-start; }
+  .row .body { min-width: 0; flex: 1; }
+  .why { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+  .why span {
+    font-family: var(--mono); font-size: 11px; padding: 3px 8px;
+    border-radius: 5px; background: var(--sunk); color: var(--muted);
+  }
+  .why span.flag { background: transparent; color: var(--warn);
+    border: 1px solid currentColor; }
+  .sc { font-family: var(--mono); font-weight: 500; font-size: 15px;
+    color: var(--accent); font-variant-numeric: tabular-nums; }
+  .heroline { display: flex; justify-content: space-between; gap: 14px;
+    align-items: baseline; }
+
+  .pipeline { display: grid; gap: 2px; }
+  .step { display: grid; grid-template-columns: 118px 1fr; gap: 16px;
+    padding: 13px 0; border-top: 1px solid var(--line); align-items: start; }
+  .step:last-child { border-bottom: 1px solid var(--line); }
+  .step .s {
+    font-family: var(--mono); font-size: 11px; letter-spacing: .08em;
+    text-transform: uppercase; color: var(--accent); padding-top: 2px;
+  }
+  .step .s.pending { color: var(--muted); }
+  .step p { margin: 0; font-size: 14px; }
+  .step p b { font-weight: 600; }
+  .step em { color: var(--muted); font-style: normal; }
+
+  footer { margin-top: 56px; padding-top: 22px; border-top: 1px solid var(--line);
+    color: var(--muted); font-size: 13px; }
+  @media (max-width: 620px) {
+    .row { flex-direction: column; }
+    .strip.mini { width: 100%; }
+    .step { grid-template-columns: 1fr; gap: 4px; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <header class="mast">
+    <div class="kicker">Clip sourcing for Doctor Sango</div>
+    <h1>Find the clip, not just the video.</h1>
+    <p class="lede">Type a scenario. It scores whether the venue is worth doing at
+      all, then finds short, unwatermarked, mid-tail fail clips that fit the
+      &ldquo;first &amp; last day&rdquo; format.</p>
+  </header>
+
+  <div class="notice">
+    <p><b>This is a demo, not the live tool.</b> Browser sandboxes block outbound
+      API calls, so the clip results below were captured from real YouTube
+      searches run locally. <b>The venue scorer is live</b> &mdash; type anything
+      and it runs the real model in your browser.<br><br>
+      The deployable version asks each person for <b>their own API key</b>, so
+      running a search spends your quota and nobody else&rsquo;s.</p>
+  </div>
+
+  <section style="margin-top:40px">
+    <h2>Is this venue worth doing?</h2>
+    <div class="scorer">
+      <div class="field">
+        <input id="q" placeholder="trampoline park, ice skating, the dentist&hellip;"
+               autocomplete="off" aria-label="Scenario to score">
+        <button id="go">Score</button>
+      </div>
+      <div class="chips" id="chips"></div>
+      <div class="result" id="res"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Why this exists</h2>
+    <div class="stats">
+      <div class="stat">
+        <div class="n down">4,538</div>
+        <div class="l">Median views per upload in 2026, down from 80,520 in 2023
+          &mdash; on five times the volume.</div>
+      </div>
+      <div class="stat">
+        <div class="n up">2.2&times;</div>
+        <div class="l">How far &ldquo;first &amp; last day&rdquo; beats his 2026
+          baseline. It&rsquo;s the only format currently producing hits.</div>
+      </div>
+      <div class="stat">
+        <div class="n">1,400&times;</div>
+        <div class="l">Spread between his best venue (parkour, 2.5M) and his worst
+          (gyms, 1,778). Same format, same nine weeks.</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Captured searches</h2>
+    <div class="tabs" id="tabs" role="tablist"></div>
+    <div id="scenario"></div>
+  </section>
+
+  <section>
+    <h2>How it works</h2>
+    <div class="pipeline">
+      <div class="step"><div class="s">1 &middot; Venue</div>
+        <p><b>Score the scenario before spending effort on it.</b> A ridge model
+          fitted on 41 of his uploads. <em>Saturation hurts most; raw danger
+          turns out not to matter at all.</em></p></div>
+      <div class="step"><div class="s">2 &middot; Search</div>
+        <p><b>YouTube Data API, two query variants, cached.</b> Reddit next.
+          <em>No TikTok scraping &mdash; that&rsquo;s the watermarked pool
+          we&rsquo;re avoiding.</em></p></div>
+      <div class="step"><div class="s">3 &middot; Rank</div>
+        <p><b>Views scored on a band, not a curve.</b> A 60M-view brand clip is
+          worse than a 100k amateur fail. <em>Licensing agencies and trick
+          showcases are penalised.</em></p></div>
+      <div class="step"><div class="s pending">4 &middot; Judge</div>
+        <p><b>Claude reads the four frames above each clip.</b> Watermarks, genre
+          match, funny-for-this-channel. <em>Built and wired; needs an API key,
+          so it hasn&rsquo;t run on this demo.</em></p></div>
+      <div class="step"><div class="s pending">5 &middot; Assemble</div>
+        <p><b>Two-act packs.</b> First day mild, last day chaos, ordered by
+          escalation. <em>Not built yet.</em></p></div>
+    </div>
+  </section>
+
+  <footer>
+    <p>Rankings shown are the heuristic prefilter only &mdash; the Claude judge
+      hasn&rsquo;t run here. The venue model is directional, not predictive
+      (leave-one-out &rho; = 0.43): it filters duds rather than picking hits.
+      Clip titles, channels and view counts are live YouTube data captured at
+      export; every clip links back to its source.</p>
+  </footer>
+</div>
+
+<script id="demo-data" type="application/json">__DATA__</script>
+<script>
+(function () {
+  const DATA = JSON.parse(document.getElementById("demo-data").textContent);
+  const M = DATA.model, F = M.features, W = M.weights;
+  const $ = s => document.querySelector(s);
+  const esc = s => String(s ?? "").replace(/[&<>"]/g, c =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const num = n => (n ?? 0).toLocaleString();
+
+  /* ---- venue model, ported from scripts/recommend_venue.py ---- */
+  const predict = f => W[0] + f.reduce((a, v, i) => a + W[i + 1] * v, 0);
+  const tierOf = v => v >= 1e5 ? "A" : v >= 15e3 ? "B" : v >= 6e3 ? "C" : "D";
+
+  function estimate(text) {
+    const t = text.toLowerCase(), f = {};
+    F.forEach(k => f[k] = 0);
+    for (const [feat, words] of Object.entries(M.keywords)) {
+      const hits = words.filter(w => t.includes(w)).length;
+      f[feat] = Math.min(hits + (hits ? 1 : 0), 3);
+    }
+    f.supply = M.high_supply.some(w => t.includes(w)) ? 3 : 2;
+    f.saturation = M.saturated.some(w => t.includes(w)) ? 3 : 1;
+    if (f.physical === 0 && f.skill > 0) f.physical = 2;
+    return F.map(k => f[k]);
+  }
+
+  function lookup(query) {
+    const q = query.toLowerCase().trim();
+    const bound = (n, h) => new RegExp("\\b" + n.replace(/[.*+?^${}()|[\]\\]/g,
+      "\\$&") + "\\b").test(h);
+    const hits = [];
+    for (const [name, feats] of Object.entries(M.tried_features))
+      if (q === name) hits.push([1000, name, feats, true]);
+      else if (bound(name, q) || bound(q, name)) hits.push([name.length, name, feats, true]);
+    for (const [name, feats] of Object.entries(M.candidates))
+      if (q === name) hits.push([1000, name, feats, false]);
+      else if (bound(name, q) || bound(q, name)) hits.push([name.length, name, feats, false]);
+    hits.sort((a, b) => b[0] - a[0]);
+    if (hits.length) return { name: hits[0][1], feats: hits[0][2], tried: hits[0][3], est: false };
+    return { name: query, feats: estimate(query), tried: false, est: true };
+  }
+
+  function assess(query) {
+    const { name, feats, tried, est } = lookup(query);
+    const pred = Math.pow(10, predict(feats));
+    const d = Object.fromEntries(F.map((k, i) => [k, feats[i]]));
+    const warnings = [];
+    if (d.saturation >= 3) warnings.push("Heavily saturated in short-form — expect a discount.");
+    if (d.supply <= 1) warnings.push("Little footage likely available; sourcing will be hard.");
+    if (d.skill === 0 && d.physical <= 1)
+      warnings.push("No visible skill to fail at — clips will top out mild.");
+    const actual = tried ? M.tried[name] : null;
+    if (tried) warnings.push("Already done: " + num(actual) + " views (tier " +
+      tierOf(actual) + "). " + (actual >= 15000
+        ? "Repeats hold up on winners." : "It underperformed — not worth repeating."));
+    return { name, feats: d, pred, tier: tierOf(pred), est, warnings,
+      verdict: pred >= 15000 ? "worth doing" : pred >= 6000 ? "marginal" : "skip it" };
+  }
+
+  function renderVerdict(a) {
+    const bars = F.map((k, i) => {
+      const w = W[i + 1];
+      return `<div class="bar"><span>${esc(k)}</span>
+        <span class="track"><span class="fill ${w < 0 ? "neg" : ""}"
+          style="width:${(a.feats[k] / 3) * 100}%"></span></span>
+        <span>${a.feats[k]}</span></div>`;
+    }).join("");
+    $("#res").innerHTML = `
+      <div class="vline">
+        <span class="tier ${a.tier}">TIER ${a.tier}</span>
+        <span class="vname">${esc(a.name)}</span>
+        <span class="vnum">~${num(Math.round(a.pred))} predicted views &middot; ${esc(a.verdict)}</span>
+      </div>
+      ${a.warnings.length ? `<ul class="warns">${a.warnings.map(w =>
+        `<li>${esc(w)}</li>`).join("")}</ul>` : ""}
+      <div class="bars">${bars}</div>
+      <div class="est">${a.est
+        ? "Features estimated from the name — less reliable than a hand-scored venue."
+        : "Hand-scored venue."} &nbsp;·&nbsp; model ρ = ${M.rho}</div>`;
+  }
+
+  ["trampoline park", "ice skating", "dirt bikes", "bowling", "gym", "karaoke"]
+    .forEach(e => {
+      const b = document.createElement("button");
+      b.className = "chip"; b.type = "button"; b.textContent = e;
+      b.onclick = () => { $("#q").value = e; renderVerdict(assess(e)); };
+      $("#chips").append(b);
+    });
+
+  const run = () => { const v = $("#q").value.trim(); if (v) renderVerdict(assess(v)); };
+  $("#go").onclick = run;
+  $("#q").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); run(); } });
+
+  /* ---- captured scenarios ---- */
+  const strip = (frames, mini) => frames.length
+    ? `<div class="strip ${mini ? "mini" : ""}">${frames.map(f =>
+        `<img src="${f}" alt="" loading="lazy">`).join("")}</div>` : "";
+
+  const why = c => `<div class="why">${[
+    ...c.reasons.map(r => `<span>${esc(r)}</span>`),
+    ...c.flags.map(f => `<span class="flag">${esc(f)}</span>`)].join("")}</div>`;
+
+  function renderScenario(i) {
+    const s = DATA.scenarios[i];
+    const [pick, ...rest] = s.clips;
+    const v = s.verdict;
+    $("#scenario").innerHTML = `
+      <div class="vline" style="margin-bottom:16px">
+        <span class="tier ${v.tier}">TIER ${v.tier}</span>
+        <span class="vnum">~${num(v.predicted)} predicted views &middot; ${esc(v.verdict)}
+          &middot; ${s.clips.length} candidates found</span>
+      </div>
+      <div class="hero">
+        ${strip(pick.frames)}
+        <div class="heroline">
+          <a class="ct" href="${esc(pick.url)}" target="_blank" rel="noopener">${esc(pick.title)}</a>
+          <span class="sc">${pick.score}</span>
+        </div>
+        <div class="meta">${esc(pick.channel)} &middot; ${num(pick.views)} views &middot; ${pick.duration}s
+          &middot; suggested pick</div>
+        ${why(pick)}
+      </div>
+      <div class="list" style="margin-top:12px">
+        ${rest.map(c => `<div class="card"><div class="row">
+          ${strip(c.frames, true)}
+          <div class="body">
+            <div class="heroline">
+              <a class="ct" href="${esc(c.url)}" target="_blank" rel="noopener">${esc(c.title)}</a>
+              <span class="sc">${c.score}</span>
+            </div>
+            <div class="meta">${esc(c.channel)} &middot; ${num(c.views)} views &middot; ${c.duration}s</div>
+            ${why(c)}
+          </div></div></div>`).join("")}
+      </div>`;
+    [...$("#tabs").children].forEach((t, n) =>
+      t.setAttribute("aria-selected", n === i ? "true" : "false"));
+  }
+
+  DATA.scenarios.forEach((s, i) => {
+    const b = document.createElement("button");
+    b.className = "tab"; b.type = "button"; b.role = "tab";
+    b.textContent = s.name;
+    b.onclick = () => renderScenario(i);
+    $("#tabs").append(b);
+  });
+
+  renderVerdict(assess("trampoline park"));
+  $("#q").value = "trampoline park";
+  renderScenario(0);
+})();
+</script>

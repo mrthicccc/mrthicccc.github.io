@@ -1,0 +1,23 @@
+{
+  "genre_match": true,
+  "genre_evidence": "Frames 1 and 4 show a rider on a green Kawasaki dirt bike on a dirt jump track — frame 1 mid-air with the rider off the seat, frame 4 a dust-cloud nose-dive/endo into a mound. Frames 2 and 3 are garage footage of tennis balls being stuffed into a knobby tyre and wheel reassembly.",
+  "watermark_visible": false,
+  "watermark_detail": "No TikTok/Reels/Snap mark or @handle. There is a burned-in white 'SUBSCRIBE' bar across the bottom of every frame, and the video is already letterboxed 9:16 with blurred side pillars — channel branding, not a competitor platform watermark.",
+  "slot": "last_day",
+  "funny_score": 4.0,
+  "humour_type": [
+    "equipment_malfunction",
+    "confident_setup_failure",
+    "collateral_chaos"
+  ],
+  "why_funny": "Tennis-balls-instead-of-a-tube build cuts to the bike nose-diving into a dirt mound in a dust cloud — confident bodge-job setup into instant failure, readable without sound.",
+  "sound_off_legible": true,
+  "crop_safe": true,
+  "escalation_severity": 5.0,
+  "risk_flags": [
+    "possible_real_injury",
+    "brand_or_pro_content"
+  ],
+  "verdict": "manual_review",
+  "reason": "Usable dirt-bike endo for a last_day slot, but the source is a pre-letterboxed short with a burned-in SUBSCRIBE bar and blurred pillars, half the runtime is garage build footage, and frame 4 is inconclusive on whether the rider goes over the bars unhurt."
+}

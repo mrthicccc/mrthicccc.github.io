@@ -1,0 +1,56 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Clip judgement — structured output returned by the taste model",
+  "type": "object",
+  "required": ["genre_confidence", "slot", "funny_score", "verdict"],
+  "properties": {
+    "genre_confidence": {
+      "type": "number", "minimum": 0, "maximum": 1,
+      "description": "Does this match the genre config's must_see_any and violate no exclude? <0.8 is an automatic reject."
+    },
+    "genre_evidence": {
+      "type": "string",
+      "description": "Which visual cue was actually seen. Forces the model to ground the call."
+    },
+    "slot": {
+      "enum": ["first_day", "last_day", "either", "none"],
+      "description": "Which act of the two-act format this can fill."
+    },
+    "funny_score": { "type": "number", "minimum": 0, "maximum": 10 },
+    "humour_type": {
+      "type": "array",
+      "items": {
+        "enum": ["physical_incompetence", "confident_setup_failure", "unexpected_competence",
+                 "collateral_chaos", "deadpan_reaction", "elder_or_child", "equipment_malfunction"]
+      }
+    },
+    "why_funny": { "type": "string", "maxLength": 200 },
+    "punch_timestamp": {
+      "type": "number",
+      "description": "Seconds into the source video where the punch lands."
+    },
+    "suggested_in_out": {
+      "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2,
+      "description": "[in, out] seconds. Target 2-6s, landing on the punch within 1s of `in`."
+    },
+    "sound_off_legible": { "type": "boolean" },
+    "crop_safe": {
+      "type": "boolean",
+      "description": "Does the joke survive a 9:16 centre crop of a 16:9 source?"
+    },
+    "escalation_severity": {
+      "type": "number", "minimum": 0, "maximum": 10,
+      "description": "For last_day ordering only. How big is the disaster."
+    },
+    "risk_flags": {
+      "type": "array",
+      "items": {
+        "enum": ["possible_real_injury", "cruelty", "non_consenting_subject", "minor_present",
+                 "sexual_content", "profanity_in_punch", "looks_staged", "demonetisation_risk"]
+      },
+      "description": "ANY flag here routes to manual review. possible_real_injury is a hard reject."
+    },
+    "verdict": { "enum": ["accept", "manual_review", "reject"] },
+    "reject_reason": { "type": "string" }
+  }
+}

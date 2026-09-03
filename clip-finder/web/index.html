@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clip Finder</title>
+<style>
+  :root {
+    --bg: #f7f6f3; --panel: #fff; --ink: #1b1a17; --muted: #6f6b63;
+    --line: #e3e0d9; --accent: #c2410c; --good: #15803d; --warn: #b45309;
+    --shadow: 0 1px 2px rgba(0,0,0,.06), 0 8px 24px rgba(0,0,0,.05);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #17161a; --panel: #201f24; --ink: #ece9e3; --muted: #9a948c;
+      --line: #322f38; --accent: #fb923c; --good: #4ade80; --warn: #fbbf24;
+      --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.3);
+    }
+  }
+  * { box-sizing: border-box; }
+  /* An explicit display on .kfields/.kactions beats the UA rule for [hidden],
+     so the attribute needs backing up here or "collapsed" renders open. */
+  [hidden] { display: none !important; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 15px/1.55 ui-sans-serif, -apple-system, "Segoe UI", system-ui, sans-serif;
+  }
+  .wrap { max-width: 940px; margin: 0 auto; padding: 40px 20px 80px; }
+  header { margin-bottom: 28px; }
+  h1 { font-size: 26px; margin: 0 0 4px; letter-spacing: -.02em; }
+  .sub { color: var(--muted); font-size: 14px; }
+  form { display: flex; gap: 10px; margin: 24px 0 8px; }
+  input {
+    flex: 1; padding: 13px 16px; font-size: 16px; font-family: inherit;
+    border: 1px solid var(--line); border-radius: 10px;
+    background: var(--panel); color: var(--ink); box-shadow: var(--shadow);
+  }
+  input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+  button {
+    padding: 13px 22px; font-size: 15px; font-weight: 600; font-family: inherit;
+    border: 0; border-radius: 10px; background: var(--accent); color: #fff;
+    cursor: pointer;
+  }
+  button:disabled { opacity: .55; cursor: default; }
+  .chips { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 26px; }
+  .chip {
+    font-size: 13px; padding: 5px 11px; border-radius: 20px; cursor: pointer;
+    border: 1px solid var(--line); background: var(--panel); color: var(--muted);
+  }
+  .chip:hover { color: var(--ink); border-color: var(--accent); }
+  .card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+    padding: 18px 20px; margin-bottom: 16px; box-shadow: var(--shadow);
+  }
+  .verdict { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .tier {
+    font-size: 13px; font-weight: 700; padding: 3px 10px; border-radius: 6px;
+    background: var(--accent); color: #fff; letter-spacing: .04em;
+  }
+  .tier.D { background: var(--muted); }
+  .tier.C { background: var(--warn); }
+  .tier.A, .tier.B { background: var(--good); }
+  .est { font-size: 12px; color: var(--muted); font-style: italic; }
+  ul.warn { margin: 12px 0 0; padding-left: 18px; color: var(--warn); font-size: 14px; }
+  h2 {
+    font-size: 13px; text-transform: uppercase; letter-spacing: .09em;
+    color: var(--muted); margin: 34px 0 12px; font-weight: 600;
+  }
+  .pick { border-color: var(--accent); border-width: 2px; }
+  .clip { display: flex; gap: 15px; align-items: flex-start; }
+  .clip img {
+    width: 168px; aspect-ratio: 16/9; object-fit: cover;
+    border-radius: 8px; background: var(--line); flex-shrink: 0;
+  }
+  .clip .meta { min-width: 0; flex: 1; }
+  .clip a { color: inherit; text-decoration: none; font-weight: 600; }
+  .clip a:hover { color: var(--accent); }
+  .stats { color: var(--muted); font-size: 13px; margin: 5px 0; }
+  .reasons { font-size: 13px; color: var(--muted); }
+  .reasons span {
+    display: inline-block; margin: 4px 6px 0 0; padding: 2px 8px;
+    border: 1px solid var(--line); border-radius: 5px;
+  }
+  .flag { color: var(--warn); border-color: currentColor !important; }
+  .score {
+    font-variant-numeric: tabular-nums; font-weight: 700; font-size: 15px;
+    color: var(--accent);
+  }
+  .row { display: flex; justify-content: space-between; gap: 12px; }
+  .keys {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+    padding: 16px 18px; margin-bottom: 22px; box-shadow: var(--shadow);
+  }
+  .krow { display: flex; justify-content: space-between; align-items: baseline; }
+  .khint { font-size: 13px; color: var(--muted); margin: 6px 0 14px; max-width: 68ch; }
+  .khint em { font-style: normal; color: var(--ink); font-weight: 600; }
+  .kfields { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .kfields label {
+    display: flex; flex-direction: column; gap: 5px;
+    font-size: 12px; color: var(--muted);
+  }
+  .kfields input { font-size: 14px; padding: 9px 11px; font-family: ui-monospace, monospace; }
+  .req { color: var(--accent); font-weight: 600; }
+  .opt { color: var(--muted); }
+  .kactions { display: flex; align-items: center; gap: 12px; margin-top: 14px; }
+  .kactions button { padding: 9px 16px; font-size: 14px; }
+  .link {
+    background: none; border: 0; color: var(--muted); cursor: pointer;
+    font-size: 13px; text-decoration: underline; padding: 0;
+  }
+  .link:hover { color: var(--accent); }
+  .ksaved { font-size: 13px; color: var(--good); }
+  .judged {
+    margin: 10px 0 2px; padding: 10px 12px; border-radius: 8px;
+    background: color-mix(in srgb, var(--accent) 7%, transparent);
+    border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
+  }
+  .jrow { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .badge {
+    font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
+    padding: 3px 8px; border-radius: 5px; color: #fff; background: var(--muted);
+  }
+  .badge.accept { background: var(--good); }
+  .badge.reject { background: #b91c1c; }
+  .badge.manual_review { background: var(--warn); }
+  .funny { font-weight: 700; font-variant-numeric: tabular-nums; }
+  .funny small { font-weight: 400; color: var(--muted); margin-left: 2px; }
+  .jwhy { font-size: 14px; }
+  .jreason { font-size: 13px; color: var(--muted); margin-top: 7px; font-style: italic; }
+  .note {
+    padding: 11px 14px; border-radius: 9px; margin-bottom: 16px; font-size: 13px;
+    background: color-mix(in srgb, var(--warn) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--warn) 35%, transparent);
+    color: var(--ink);
+  }
+  .empty, .err { color: var(--muted); padding: 26px 0; text-align: center; }
+  .err { color: var(--accent); }
+  .quota { font-size: 12px; color: var(--muted); margin-top: 22px; text-align: center; }
+  .spin { display: inline-block; animation: sp 1s linear infinite; }
+  @keyframes sp { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Clip Finder</h1>
+    <div class="sub">Search any scenario. Get it rated, then get clips for it.</div>
+  </header>
+
+  <form id="f">
+    <input id="q" placeholder="wakeboarding, ice skating, go-karting, the dentist…"
+           autocomplete="off" autofocus>
+    <button id="go">Find</button>
+  </form>
+
+  <div class="chips" id="chips"></div>
+
+  <div class="keys" id="keys" hidden>
+    <div class="krow">
+      <strong>Your API keys</strong>
+      <button type="button" class="link" id="toggle">hide</button>
+    </div>
+    <p class="khint">Stored in this browser only, sent with your own searches
+      and never saved on the server. Each search costs ~200 units of
+      <em>your</em> YouTube quota.</p>
+    <div class="kfields">
+      <label>YouTube Data API key <span class="req">required</span>
+        <input type="password" id="ytkey" autocomplete="off" spellcheck="false"
+               placeholder="AIza…"></label>
+      <label>Anthropic API key <span class="opt">optional — enables the judge</span>
+        <input type="password" id="ankey" autocomplete="off" spellcheck="false"
+               placeholder="sk-ant-…"></label>
+    </div>
+    <div class="kactions">
+      <button type="button" id="savekeys">Save keys</button>
+      <button type="button" class="link" id="clearkeys">Clear</button>
+      <span class="ksaved" id="ksaved"></span>
+    </div>
+  </div>
+
+  <div id="out"></div>
+</div>
+
+<script>
+const EXAMPLES = ["wakeboarding", "ice skating", "go-karting", "horse riding",
+                  "dirt bikes", "surfing", "bowling", "gym"];
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c =>
+  ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const num = n => (n ?? 0).toLocaleString();
+
+EXAMPLES.forEach(e => {
+  const b = document.createElement("button");
+  b.type = "button"; b.className = "chip"; b.textContent = e;
+  b.onclick = () => { $("#q").value = e; run(); };
+  $("#chips").append(b);
+});
+
+function judgeBlock(j) {
+  if (!j) return "";
+  const v = j.verdict;
+  const risks = [
+    ...(j.watermark_visible ? [`watermark: ${j.watermark_detail}`] : []),
+    ...(j.genre_match ? [] : [`genre mismatch: ${j.genre_evidence}`]),
+    ...j.risk_flags.map(r => r.replace(/_/g, " "))
+  ].map(r => `<span class="flag">${esc(r)}</span>`).join("");
+  const props = [
+    j.slot !== "none" ? `slot: ${j.slot}` : null,
+    j.sound_off_legible ? "reads with sound off" : "needs audio",
+    j.crop_safe ? "9:16 safe" : "not crop-safe",
+    ...j.humour_type.map(h => h.replace(/_/g, " "))
+  ].filter(Boolean).map(p => `<span>${esc(p)}</span>`).join("");
+  return `<div class="judged">
+    <div class="jrow">
+      <span class="badge ${esc(v)}">${esc(v.replace("_", " "))}</span>
+      <span class="funny">${j.funny_score}<small>/10 funny</small></span>
+      <span class="jwhy">${esc(j.why_funny)}</span>
+    </div>
+    <div class="reasons">${props}${risks}</div>
+    <div class="jreason">${esc(j.reason)}</div>
+  </div>`;
+}
+
+function clipCard(c, pick) {
+  const tags = [...c.reasons.map(r => `<span>${esc(r)}</span>`),
+                ...c.flags.map(f => `<span class="flag">${esc(f)}</span>`)].join("");
+  return `<div class="card ${pick ? "pick" : ""}">
+    <div class="clip">
+      ${c.thumb ? `<img src="${esc(c.thumb)}" alt="" loading="lazy">` : ""}
+      <div class="meta">
+        <div class="row">
+          <a href="${esc(c.url)}" target="_blank" rel="noopener">${esc(c.title)}</a>
+          <span class="score">${c.judgement ? "" : c.score}</span>
+        </div>
+        <div class="stats">${esc(c.channel)} &middot; ${num(c.views)} views
+          &middot; ${c.duration_s}s${c.judgement ? "" : " &middot; not judged"}</div>
+        ${judgeBlock(c.judgement)}
+        <div class="reasons">${tags}</div>
+      </div>
+    </div></div>`;
+}
+
+function render(d) {
+  if (d.error) { $("#out").innerHTML = `<div class="err">${esc(d.error)}</div>`; return; }
+  const v = d.verdict;
+  let html = "";
+  if (v) {
+    html += `<div class="card">
+      <div class="verdict">
+        <span class="tier ${v.tier}">TIER ${v.tier}</span>
+        <strong>${esc(v.matched)}</strong>
+        <span class="stats">~${num(v.predicted)} predicted views &middot;
+          ${esc(v.verdict)}</span>
+      </div>
+      ${v.estimated ? `<div class="est">Features estimated from the name —
+        less reliable than a hand-scored venue.</div>` : ""}
+      ${v.warnings.length ? `<ul class="warn">${
+        v.warnings.map(w => `<li>${esc(w)}</li>`).join("")}</ul>` : ""}
+      <div class="est" style="margin-top:10px">Venue model is directional only
+        (leave-one-out &rho; = ${v.model_rho}). It filters duds; it does not pick hits.</div>
+    </div>`;
+  }
+  if (d.judge_note) {
+    html += `<div class="note">${esc(d.judge_note)}</div>`;
+  }
+  if (d.suggested) {
+    html += `<h2>Suggested clip${d.suggested.weak_pick
+      ? " — nothing cleared the bar, this is the least bad" : ""}</h2>`
+      + clipCard(d.suggested, true);
+  }
+  const rest = d.clips.filter(c => !d.suggested || c.video_id !== d.suggested.video_id);
+  if (rest.length) {
+    html += `<h2>${rest.length} more candidates</h2>` +
+            rest.map(c => clipCard(c, false)).join("");
+  } else if (!d.suggested) {
+    html += `<div class="empty">No clips found for that scenario.</div>`;
+  }
+  html += `<div class="quota">${d.quota ? d.quota + " quota units used"
+            : "served from cache — no quota used"}</div>`;
+  $("#out").innerHTML = html;
+}
+
+/* --- keys: kept in this browser, sent as headers, never in the URL --- */
+const store = {
+  get(k) { try { return localStorage.getItem(k) || ""; } catch { return ""; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch {} },
+  del(k) { try { localStorage.removeItem(k); } catch {} },
+};
+
+function loadKeys() {
+  $("#ytkey").value = store.get("cf_yt");
+  $("#ankey").value = store.get("cf_an");
+}
+
+$("#savekeys").onclick = () => {
+  const yt = $("#ytkey").value.trim(), an = $("#ankey").value.trim();
+  yt ? store.set("cf_yt", yt) : store.del("cf_yt");
+  an ? store.set("cf_an", an) : store.del("cf_an");
+  $("#ksaved").textContent = "Saved in this browser";
+  setTimeout(() => ($("#ksaved").textContent = ""), 2500);
+};
+
+$("#clearkeys").onclick = () => {
+  store.del("cf_yt"); store.del("cf_an");
+  $("#ytkey").value = ""; $("#ankey").value = "";
+  $("#ksaved").textContent = "Cleared";
+  setTimeout(() => ($("#ksaved").textContent = ""), 2500);
+};
+
+$("#toggle").onclick = () => {
+  const f = $("#keys").querySelector(".kfields"), a = $("#keys").querySelector(".kactions");
+  const hidden = f.hasAttribute("hidden");
+  [f, a].forEach(el => hidden ? el.removeAttribute("hidden") : el.setAttribute("hidden", ""));
+  $("#toggle").textContent = hidden ? "hide" : "show";
+};
+
+async function run() {
+  const q = $("#q").value.trim();
+  if (!q) return;
+  $("#go").disabled = true;
+  $("#out").innerHTML = `<div class="empty"><span class="spin">◐</span>
+    searching “${esc(q)}”…</div>`;
+  const headers = {};
+  const yt = $("#ytkey").value.trim() || store.get("cf_yt");
+  const an = $("#ankey").value.trim() || store.get("cf_an");
+  if (yt) headers["X-Youtube-Key"] = yt;
+  if (an) headers["X-Anthropic-Key"] = an;
+  try {
+    const r = await fetch("/api/search?q=" + encodeURIComponent(q), { headers });
+    const d = await r.json();
+    render(d);
+    if (d.needs_key) {
+      $("#keys").hidden = false;
+      $("#ytkey").focus();
+    }
+  } catch (e) {
+    $("#out").innerHTML = `<div class="err">${esc(e.message)}</div>`;
+  }
+  $("#go").disabled = false;
+}
+
+/* The panel is always available so you can override a server key with your own.
+   It starts expanded when the server won't supply keys, collapsed when it will. */
+(async () => {
+  loadKeys();
+  let needed = true;
+  try {
+    const cfg = await (await fetch("/api/config")).json();
+    needed = cfg.require_user_key || !cfg.server_has_youtube;
+  } catch {}
+  $("#keys").hidden = false;
+  if (!needed) {
+    $("#keys").querySelector(".kfields").setAttribute("hidden", "");
+    $("#keys").querySelector(".kactions").setAttribute("hidden", "");
+    $("#toggle").textContent = "show";
+    $("#keys").querySelector(".khint").textContent =
+      "This server has its own key. Add your own to use your quota instead.";
+  }
+})();
+
+$("#f").onsubmit = e => { e.preventDefault(); run(); };
+// Belt and braces: some environments swallow the form's submit on Enter.
+$("#q").addEventListener("keydown", e => {
+  if (e.key === "Enter") { e.preventDefault(); run(); }
+});
+</script>
+</body>
+</html>

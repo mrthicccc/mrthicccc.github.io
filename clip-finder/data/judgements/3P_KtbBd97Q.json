@@ -1,0 +1,21 @@
+{
+  "genre_match": true,
+  "genre_evidence": "Small child in full motocross kit on a mini dirt bike at a dirt track; frames show the kid face-down in the dirt after a crash and an adult picking up the bike and the child.",
+  "watermark_visible": false,
+  "watermark_detail": "None seen in these frames; blurred-fill 9:16 Shorts styling but no platform logo or @handle burned in.",
+  "slot": "none",
+  "funny_score": 1.0,
+  "humour_type": [
+    "physical_incompetence"
+  ],
+  "why_funny": "Not funny here — a young child lies motionless face-down in the dirt after a crash while an adult rushes over; reads as a genuine hurt-kid moment, not a gag.",
+  "sound_off_legible": true,
+  "crop_safe": true,
+  "escalation_severity": 6.0,
+  "risk_flags": [
+    "possible_real_injury",
+    "minor_present"
+  ],
+  "verdict": "reject",
+  "reason": "Young child crashes and lies face-down needing an adult to lift him — possible real injury involving a minor, which is a hard reject regardless of format fit."
+}

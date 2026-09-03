@@ -1,0 +1,23 @@
+{
+  "genre_match": true,
+  "genre_evidence": "Frames show off-road motorbikes: a rider descending a steep rocky waterfall gully with a downed rider and bike at the bottom, and a dirt bike flipped over the crest of a motocross jump.",
+  "watermark_visible": false,
+  "watermark_detail": "No platform logo or @handle seen; however burned-in countdown graphics ('3', '1') and a stray 'EXIST' caption indicate this is another editor's ranked compilation, already letterboxed 9:16 with blurred side bars.",
+  "slot": "last_day",
+  "funny_score": 3.0,
+  "humour_type": [
+    "equipment_malfunction",
+    "collateral_chaos"
+  ],
+  "why_funny": "Bike cartwheeling over a jump lip reads instantly, but the gully frame is a rider face-down in rocks with a mate stopped above — that's an accident, not a gag.",
+  "sound_off_legible": true,
+  "crop_safe": true,
+  "escalation_severity": 8.0,
+  "risk_flags": [
+    "possible_real_injury",
+    "demonetisation_risk",
+    "brand_or_pro_content"
+  ],
+  "verdict": "reject",
+  "reason": "Rider is lying motionless at the base of a rock gully with another rider halted above him, which reads as a genuine injury, and the clip is a third-party countdown compilation with burned-in ranking graphics."
+}

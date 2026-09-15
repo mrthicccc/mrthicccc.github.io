@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<meta name="theme-color" content="#0b0b0f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="description" content="Discover events happening near you, identify what you are looking at, plan a trip and invite friends.">
+<title>Touring App</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%230b0b0f'/><circle cx='16' cy='16' r='7' fill='none' stroke='%23fbbf24' stroke-width='2.5'/><circle cx='16' cy='16' r='2.5' fill='%23fbbf24'/></svg>">
+<link rel="stylesheet" href="vendor/leaflet.css">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="appbar">
+  <button class="iconbtn" id="backBtn" hidden aria-label="Back">‹</button>
+  <h1 id="title">Near Me<span class="sub" id="subtitle">Finding your location…</span></h1>
+  <button class="iconbtn" id="aboutBtn" aria-label="About">i</button>
+</header>
+
+<!-- ============ NEAR ME ============ -->
+<main class="screen active" id="screen-near">
+  <div id="locBanner"></div>
+
+  <div class="filterbar" id="dateFilter">
+    <button class="chip on" data-when="all">All upcoming</button>
+    <button class="chip" data-when="today">Today</button>
+    <button class="chip" data-when="weekend">This weekend</button>
+    <button class="chip" data-when="month">This month</button>
+  </div>
+
+  <div class="filterbar" id="catFilter">
+    <button class="chip on" data-cat="all">All</button>
+  </div>
+
+  <div class="filterbar" id="priceFilter">
+    <button class="chip on" data-max="9999">Any price</button>
+    <button class="chip" data-max="0">Free only</button>
+    <button class="chip" data-max="25">Under 25</button>
+    <button class="chip" data-max="50">Under 50</button>
+  </div>
+
+  <div class="viewtoggle">
+    <button class="on" data-view="list">List</button>
+    <button data-view="map">Map</button>
+  </div>
+
+  <div id="nearList"></div>
+  <div id="map" hidden></div>
+</main>
+
+<!-- ============ DISCOVER ============ -->
+<main class="screen" id="screen-discover">
+  <div class="modeswitch">
+    <button class="on" data-mode="identify">Identify</button>
+    <button data-mode="translate">Translate</button>
+  </div>
+
+  <div id="discoverIntro">
+    <p class="prose" id="discoverBlurb"></p>
+    <div class="camera-stage" id="cameraStage">
+      <div class="camera-placeholder">
+        <div class="big">◉</div>
+        <div>Point your camera at a landmark, building, artwork or sign</div>
+      </div>
+    </div>
+    <button class="shutter" id="shutterBtn" aria-label="Take photo"></button>
+    <button class="btn secondary" id="startCamBtn">Open camera</button>
+    <label for="fileInput" class="btn secondary" style="margin-bottom:0">Choose a photo instead</label>
+    <input type="file" id="fileInput" accept="image/*" capture="environment" hidden>
+  </div>
+
+  <div id="discoverResult" hidden></div>
+</main>
+
+<!-- ============ PLAN ============ -->
+<main class="screen" id="screen-plan">
+  <label for="planCity">Destination</label>
+  <select id="planCity"></select>
+
+  <label for="planMonth">Travelling in</label>
+  <select id="planMonth"></select>
+
+  <div class="section-title">What's on</div>
+  <div id="planCal"></div>
+  <div id="planList"></div>
+
+  <div class="section-title">Your itinerary</div>
+  <div id="itinerary"></div>
+</main>
+
+<!-- ============ INVITES ============ -->
+<main class="screen" id="screen-invites">
+  <div class="section-title">Received</div>
+  <div id="invitesIn"></div>
+  <div class="section-title">Sent</div>
+  <div id="invitesOut"></div>
+</main>
+
+<!-- ============ EVENT DETAIL ============ -->
+<main class="screen" id="screen-detail"></main>
+
+<!-- ============ ABOUT ============ -->
+<main class="screen" id="screen-about">
+  <p class="prose">A working prototype of a location-aware event discovery app — spot what's happening around you, point your camera at something to find out what it is, plan a trip by month, and invite people along.</p>
+
+  <div class="section-title">Real in this prototype</div>
+  <div class="prose">
+    • GPS location from your device<br>
+    • Live camera capture<br>
+    • Distance calculated from where you actually are<br>
+    • Maps and tiles (OpenStreetMap)<br>
+    • Invites, saved events and itinerary — stored in this browser<br>
+    • Shareable invite links
+  </div>
+
+  <div class="section-title">Simulated demo data</div>
+  <div class="prose">
+    • Event listings — 44 seeded events across six cities<br>
+    • Image recognition — returns a prepared result for your nearest city<br>
+    • Translation — returns a prepared result<br>
+    • "Get tickets" links are placeholders
+  </div>
+
+  <div class="section-title">To make it real</div>
+  <div class="prose">Swap the seeded data for live feeds from Ticketmaster, Eventbrite, Meetup and Yelp; route image recognition to a vision API; and add a backend for accounts and cross-device invites. The interface is built against a single internal data layer so that swap does not touch the screens.</div>
+
+  <button class="btn secondary" id="resetBtn">Clear saved data on this device</button>
+</main>
+
+<nav class="tabbar">
+  <button class="on" data-tab="near"><span class="ic">◎</span><span class="lb">Near Me</span></button>
+  <button data-tab="discover"><span class="ic">◉</span><span class="lb">Discover</span></button>
+  <button data-tab="plan"><span class="ic">▤</span><span class="lb">Plan a Trip</span></button>
+  <button data-tab="invites"><span class="ic">✉</span><span class="lb">Invites</span></button>
+</nav>
+
+<div class="sheet-backdrop" id="backdrop"></div>
+<div class="sheet" id="sheet"></div>
+<div class="toast" id="toast"></div>
+
+<script src="vendor/leaflet.js"></script>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
